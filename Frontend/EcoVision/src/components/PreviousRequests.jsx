@@ -1,7 +1,7 @@
 const PreviousRequests = ({ requests }) => {
   return (
     <div className="mt-6">
-      <h2 className="text-lg font-bold mb-3">📦 Previous Requests</h2>
+      <h2 className="text-lg font-bold mb-3"> Previous Requests</h2>
 
       {requests.length === 0 ? (
         <p className="text-gray-500">No previous requests yet.</p>

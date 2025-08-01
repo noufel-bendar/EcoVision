@@ -47,7 +47,7 @@ const BuyerSidebar = ({ onNewRequest, previousRequests }) => {
                 key={index}
                 className="border p-3 rounded-lg shadow-sm bg-gray-50"
                 data-aos="fade-up"
-                data-aos-delay={500 + index * 100} // تأخير تدريجي لكل عنصر
+                data-aos-delay={500 + index * 100} 
               >
                 <p><strong>Product:</strong> {req.product}</p>
                 <p><strong>Quantity:</strong> {req.quantity} kg</p>

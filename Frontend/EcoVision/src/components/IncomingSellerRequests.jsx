@@ -14,7 +14,7 @@ const IncomingSellerRequests = ({ sellerRequests, onAccept, onReject }) => {
     >
       <div className="mb-4" data-aos="fade-down" data-aos-delay="100">
         <h2 className="text-xl font-bold text-green-700 mb-1">
-          📬 Incoming Offers
+           Incoming Offers
         </h2>
         <p className="text-sm text-gray-700">
           When you accept an offer, your phone number will be sent to the seller for direct communication.
