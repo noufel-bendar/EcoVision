@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
 import BuyerSidebar from "../components/BuyerSidebar";
 import BuyerRequestForm from "../components/BuyerRequestForm";
 import IncomingSellerRequests from "../components/IncomingSellerRequests";
@@ -6,48 +8,81 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 
 const BuyerDashboard = () => {
-  const [previousRequests, setPreviousRequests] = useState([
-    { product: "Plastic", quantity: 20, price: 30, status: "Pending" },
-    { product: "Paper", quantity: 10, price: 25, status: "Completed" },
-  ]);
-
+  const [previousRequests, setPreviousRequests] = useState([]);
+  const [sellerRequests, setSellerRequests] = useState([]);
   const [showForm, setShowForm] = useState(false);
 
-  const handleAddRequest = (product, quantity, price) => {
-    const newRequest = { product, quantity, price, status: "Pending" };
-    setPreviousRequests((prev) => [newRequest, ...prev]);
-    setShowForm(false);
+  const token = localStorage.getItem("access_token");
+
+  useEffect(() => {
+    const fetchBuyerData = async () => {
+      try {
+        const [requestsRes, offersRes] = await Promise.all([
+          axios.get("/api/buyer/requests/", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get("/api/buyer/incoming-offers/", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+
+        setPreviousRequests(requestsRes.data);
+        setSellerRequests(offersRes.data);
+      } catch (error) {
+        console.error("Failed to load buyer data:", error);
+      }
+    };
+
+    fetchBuyerData();
+  }, [token]);
+
+  const handleAddRequest = async ({ product, quantity, price }) => {
+    try {
+      const res = await axios.post(
+        "/api/buyer/requests/",
+        { product, quantity, price },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setPreviousRequests((prev) => [res.data, ...prev]);
+      setShowForm(false);
+    } catch (error) {
+      console.error("Failed to submit request:", error);
+    }
   };
 
-  const [sellerRequests, setSellerRequests] = useState([
-    {
-      product: "Plastic",
-      quantity: 40,
-      price: 35,
-      sellerName: "Karim L.",
-      region: "Blida",
-    },
-    {
-      product: "Paper",
-      quantity: 15,
-      price: 22,
-      sellerName: "Samir T.",
-      region: "Setif",
-    },
-  ]);
+  const handleAccept = async (index) => {
+    const offer = sellerRequests[index];
+    try {
+      await axios.post(`/api/buyer/offer/${offer.id}/accept/`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-  const handleAccept = (index) => {
-    const updated = [...sellerRequests];
-    updated.splice(index, 1);
-    setSellerRequests(updated);
-    alert("Request accepted.");
+      const updated = [...sellerRequests];
+      updated.splice(index, 1);
+      setSellerRequests(updated);
+      alert("Offer accepted.");
+    } catch (error) {
+      console.error("Failed to accept offer:", error);
+    }
   };
 
-  const handleReject = (index) => {
-    const updated = [...sellerRequests];
-    updated.splice(index, 1);
-    setSellerRequests(updated);
-    alert("Request rejected.");
+  const handleReject = async (index) => {
+    const offer = sellerRequests[index];
+    try {
+      await axios.post(`/api/buyer/offer/${offer.id}/reject/`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const updated = [...sellerRequests];
+      updated.splice(index, 1);
+      setSellerRequests(updated);
+      alert("Offer rejected.");
+    } catch (error) {
+      console.error("Failed to reject offer:", error);
+    }
   };
 
   return (

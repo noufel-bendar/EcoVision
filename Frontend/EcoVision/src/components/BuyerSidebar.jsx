@@ -7,6 +7,8 @@ const BuyerSidebar = ({ onNewRequest, previousRequests }) => {
     AOS.refresh();
   }, []);
 
+  const safeRequests = Array.isArray(previousRequests) ? previousRequests : [];
+
   return (
     <div
       className="w-full bg-white p-4 rounded-xl shadow-md"
@@ -38,16 +40,16 @@ const BuyerSidebar = ({ onNewRequest, previousRequests }) => {
 
       <div data-aos="fade-up" data-aos-delay="400">
         <h3 className="text-md font-semibold mb-2">Previous Requests</h3>
-        {previousRequests.length === 0 ? (
+        {safeRequests.length === 0 ? (
           <p className="text-gray-500">No requests yet.</p>
         ) : (
           <ul className="space-y-2 text-sm">
-            {previousRequests.map((req, index) => (
+            {safeRequests.map((req, index) => (
               <li
                 key={index}
                 className="border p-3 rounded-lg shadow-sm bg-gray-50"
                 data-aos="fade-up"
-                data-aos-delay={500 + index * 100} 
+                data-aos-delay={500 + index * 100}
               >
                 <p><strong>Product:</strong> {req.product}</p>
                 <p><strong>Quantity:</strong> {req.quantity} kg</p>

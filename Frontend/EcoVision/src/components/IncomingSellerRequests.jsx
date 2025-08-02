@@ -7,6 +7,8 @@ const IncomingSellerRequests = ({ sellerRequests, onAccept, onReject }) => {
     AOS.refresh();
   }, []);
 
+  const requests = Array.isArray(sellerRequests) ? sellerRequests : [];
+
   return (
     <div
       className="bg-white p-6 rounded-xl shadow-md"
@@ -14,20 +16,20 @@ const IncomingSellerRequests = ({ sellerRequests, onAccept, onReject }) => {
     >
       <div className="mb-4" data-aos="fade-down" data-aos-delay="100">
         <h2 className="text-xl font-bold text-green-700 mb-1">
-           Incoming Offers
+          Incoming Offers
         </h2>
         <p className="text-sm text-gray-700">
           When you accept an offer, your phone number will be sent to the seller for direct communication.
         </p>
       </div>
 
-      {sellerRequests.length === 0 ? (
+      {requests.length === 0 ? (
         <p className="text-gray-600" data-aos="fade-up" data-aos-delay="200">
           No incoming offers at the moment.
         </p>
       ) : (
         <ul className="space-y-4">
-          {sellerRequests.map((req, index) => (
+          {requests.map((req, index) => (
             <li
               key={index}
               className="border p-4 rounded bg-gray-50 shadow-sm"

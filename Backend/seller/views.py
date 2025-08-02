@@ -2,6 +2,8 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from .models import SellerProfile, Order
 from .serializers import SellerProfileSerializer, OrderSerializer
+from .models import Reward
+from .serializers import RewardSerializer
 
 class SellerProfileViewSet(viewsets.ModelViewSet):
     serializer_class = SellerProfileSerializer
@@ -32,3 +34,29 @@ class OrderViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         seller = SellerProfile.objects.get(user=self.request.user)
         serializer.save(seller=seller)
+
+
+class RewardViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Reward.objects.all()
+    serializer_class = RewardSerializer
+    permission_classes = [IsAuthenticated]
+
+# views.py
+
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from .models import ClaimedReward
+from .serializers import ClaimedRewardSerializer
+
+class ClaimedRewardViewSet(viewsets.ModelViewSet):
+    queryset = ClaimedReward.objects.all()
+    serializer_class = ClaimedRewardSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        seller = SellerProfile.objects.get(user=self.request.user)
+        return ClaimedReward.objects.filter(seller=seller)
+
+    def perform_create(self, serializer):
+        serializer.save()
+
