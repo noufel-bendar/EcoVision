@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import bgImage from '../assets/images/2-bg.png';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 
 const Auth = () => {
+  const navigate = useNavigate();
   const [login, setLogin] = useState(true);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -11,7 +16,7 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  const [userType, setUserType] = useState('buyer'); 
+  const [userType, setUserType] = useState('buyer');
   const [nin, setNin] = useState('');
   const [state, setState] = useState('');
   const [municipality, setMunicipality] = useState('');
@@ -27,7 +32,7 @@ const Auth = () => {
     }, 100);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -41,53 +46,80 @@ const Auth = () => {
       return;
     }
 
-    if (!login && userType === 'seller' && !nin) {
+    if (!login && userType === 'buyer' && !nin) {
       setError('Please enter your NIN');
       return;
     }
 
-    alert(`${login ? 'Login' : 'Sign Up'} request submitted`);
-    console.log({
-      username,
-      email,
-      password,
-      firstName,
-      lastName,
-      userType,
-      nin: userType === 'seller' ? nin : undefined,
-      state,
-      municipality,
-    });
+    try {
+      let res;
+
+      if (login) {
+        res = await axios.post('http://127.0.0.1:8000/api/login/', {
+          username,
+          password,
+        });
+        console.log("Login response:", res.data);
+
+      } else {
+        const payload = {
+          username,
+          password,
+          email,
+          first_name: firstName,
+          last_name: lastName,
+          userType,
+          nin,
+          state,
+          municipality,
+        };
+
+        res = await axios.post('http://127.0.0.1:8000/api/register/', payload);
+      }
+
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user_type', res.data.user_type);
+      localStorage.setItem('username', res.data.username);
+
+      if (res.data.user_type === 'buyer') {
+        navigate('/buyer');
+      } else if (res.data.user_type === 'seller') {
+        navigate('/seller');
+      } 
+
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.error || 'Authentication failed');
+    }
   };
+  const algerianStates = [
+    'Adrar', 'Chlef', 'Laghouat', 'Oum El Bouaghi', 'Batna', 'Béjaïa', 'Biskra', 'Béchar', 'Blida', 'Bouira',
+    'Tamanrasset', 'Tébessa', 'Tlemcen', 'Tiaret', 'Tizi Ouzou', 'Algiers', 'Djelfa', 'Jijel', 'Sétif', 'Saïda',
+    'Skikda', 'Sidi Bel Abbès', 'Annaba', 'Guelma', 'Constantine', 'Médéa', 'Mostaganem', 'Msila', 'Mascara',
+    'Ouargla', 'Oran', 'El Bayadh', 'Illizi', 'Bordj Bou Arréridj', 'Boumerdès', 'El Tarf', 'Tindouf',
+    'Tissemsilt', 'El Oued', 'Khenchela', 'Souk Ahras', 'Tipaza', 'Mila', 'Aïn Defla', 'Naâma',
+    'Aïn Témouchent', 'Ghardaïa', 'Relizane', 'Timimoun', 'Bordj Badji Mokhtar', 'Ouled Djellal', 'Béni Abbès',
+    'In Salah', 'In Guezzam', 'Touggourt', 'Djanet', "El M'Ghair", 'El Menia'
+  ];
 
   return (
     <>
-      <p
-        className="bg-logoGreen text-white font-extrabold text-5xl py-4 px-11 tracking-widest uppercase"
-        data-aos="fade-down"
-      >
+      <p className="bg-logoGreen text-white font-extrabold text-5xl py-4 px-11 tracking-widest uppercase" data-aos="fade-down">
         Welcome to EcoVision
       </p>
 
       <div className="min-h-screen flex items-center justify-center bg-[#f3fdf3] px-6 sm:px-12">
         <div data-aos="fade-right" className="hidden md:block mr-8">
-          <img
-            src="/src/assets/images/2-bg.png"
-            alt="icon"
-            className="w-[520px] h-auto"
-          />
+          <img src={bgImage} alt="icon" className="w-[520px] h-auto" />
         </div>
 
-        <div
-          key={login ? 'login' : 'signup'}
-          className="bg-white bg-opacity-90 p-8 rounded-2xl shadow-xl w-96"
-          data-aos="fade-left"
-        >
+        <div key={login ? 'login' : 'signup'} className="bg-white bg-opacity-90 p-8 rounded-2xl shadow-xl w-96" data-aos="fade-left">
           <h2 className="text-2xl font-bold text-center mb-6 text-logoGreen tracking-widest">
             {login ? 'Login' : 'Sign Up'}
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Username */}
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-800">Username</label>
               <input
@@ -99,6 +131,7 @@ const Auth = () => {
               />
             </div>
 
+            {/* Sign Up Fields */}
             {!login && (
               <>
                 <div>
@@ -158,7 +191,7 @@ const Auth = () => {
                   </div>
                 </div>
 
-                {userType === 'seller' && (
+                {userType === 'buyer' && (
                   <div>
                     <label className="block text-sm font-medium mb-1 text-gray-800">NIN (ID Number)</label>
                     <input
@@ -172,18 +205,21 @@ const Auth = () => {
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium mb-1 text-gray-800">State (ولاية)</label>
-                  <input
-                    type="text"
-                    placeholder="Your state"
+                  <label className="block text-sm font-medium mb-1 text-gray-800">State</label>
+                  <select
                     className="w-full px-4 py-2 border border-logoGreen rounded-md focus:outline-none focus:ring-2 focus:ring-logoGreen"
                     value={state}
                     onChange={(e) => setState(e.target.value)}
-                  />
+                  >
+                    <option value="">Select your state</option>
+                    {algerianStates.map((wilaya) => (
+                      <option key={wilaya} value={wilaya}>{wilaya}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1 text-gray-800">Municipality (بلدية)</label>
+                  <label className="block text-sm font-medium mb-1 text-gray-800">Municipality</label>
                   <input
                     type="text"
                     placeholder="Your municipality"
@@ -219,7 +255,9 @@ const Auth = () => {
               </div>
             )}
 
-            {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+            {error && (
+              <p className="text-red-500 text-sm text-center">{error}</p>
+            )}
 
             <div className="mt-8">
               <button
