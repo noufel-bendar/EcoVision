@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const TopSellers = () => {
+function TopSellers() {
   const [topSellers, setTopSellers] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -109,6 +109,6 @@ const TopSellers = () => {
       </div>
     </div>
   );
-};
+}
 
 export default TopSellers;
