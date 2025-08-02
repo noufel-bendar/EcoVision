@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FiUser, FiLogOut, FiHome, FiBarChart } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import logoText from '../assets/images/2-tx-bg.png';
 
 const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -32,9 +33,11 @@ const Header = () => {
       <div className="w-full h-full px-0 flex items-center justify-between">
 
         <div className="flex items-center space-x-2 pl-4 cursor-pointer" onClick={() => handleNavigation('home')}>
-          <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-            <span className="text-logoGreen font-bold text-lg">EV</span>
-          </div>
+          <img
+            src={logoText}
+            alt="EcoVision Logo"
+            className="h-40 w-auto mt-4"
+          />
           <span className="text-2xl font-bold text-white tracking-wide">EcoVision</span>
         </div>
 
