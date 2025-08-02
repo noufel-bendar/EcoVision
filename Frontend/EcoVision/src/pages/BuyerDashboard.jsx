@@ -7,6 +7,10 @@ import IncomingSellerRequests from "../components/IncomingSellerRequests";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 
+// ✅ Set baseURL for your Django API
+axios.defaults.baseURL = "http://localhost:8000";
+axios.defaults.headers.common["Content-Type"] = "application/json";
+
 const BuyerDashboard = () => {
   const [previousRequests, setPreviousRequests] = useState([]);
   const [sellerRequests, setSellerRequests] = useState([]);
@@ -14,16 +18,17 @@ const BuyerDashboard = () => {
 
   const token = localStorage.getItem("access_token");
 
+  // ✅ Add token to axios default headers once it's available
+  if (token) {
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  }
+
   useEffect(() => {
     const fetchBuyerData = async () => {
       try {
         const [requestsRes, offersRes] = await Promise.all([
-          axios.get("/api/buyer/requests/", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get("/api/buyer/incoming-offers/", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+          axios.get("/api/buyer/requests/"),
+          axios.get("/api/buyer/incoming-offers/")
         ]);
 
         setPreviousRequests(requestsRes.data);
@@ -33,18 +38,15 @@ const BuyerDashboard = () => {
       }
     };
 
-    fetchBuyerData();
+    if (token) fetchBuyerData();
   }, [token]);
 
-  const handleAddRequest = async ({ product, quantity, price }) => {
+  const handleAddRequest = async ({ product, quantity }) => {
     try {
-      const res = await axios.post(
-        "/api/buyer/requests/",
-        { product, quantity, price },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const res = await axios.post("/api/buyer/requests/", {
+        product,
+        quantity
+      });
 
       setPreviousRequests((prev) => [res.data, ...prev]);
       setShowForm(false);
@@ -56,9 +58,7 @@ const BuyerDashboard = () => {
   const handleAccept = async (index) => {
     const offer = sellerRequests[index];
     try {
-      await axios.post(`/api/buyer/offer/${offer.id}/accept/`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(`/api/buyer/offer/${offer.id}/accept/`);
 
       const updated = [...sellerRequests];
       updated.splice(index, 1);
@@ -72,9 +72,7 @@ const BuyerDashboard = () => {
   const handleReject = async (index) => {
     const offer = sellerRequests[index];
     try {
-      await axios.post(`/api/buyer/offer/${offer.id}/reject/`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(`/api/buyer/offer/${offer.id}/reject/`);
 
       const updated = [...sellerRequests];
       updated.splice(index, 1);

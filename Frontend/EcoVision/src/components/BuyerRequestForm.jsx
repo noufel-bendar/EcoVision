@@ -4,7 +4,6 @@ import AOS from "aos";
 const BuyerRequestForm = ({ onSubmit, onClose }) => {
   const [product, setProduct] = useState("Plastic");
   const [quantity, setQuantity] = useState("");
-  const [price, setPrice] = useState("");
 
   useEffect(() => {
     AOS.init({ duration: 800 });
@@ -13,11 +12,10 @@ const BuyerRequestForm = ({ onSubmit, onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!quantity || !price) return;
+    if (!quantity) return;
     const newRequest = {
       product,
       quantity: parseFloat(quantity),
-      price: parseFloat(price),
       status: "pending",
     };
     onSubmit(newRequest);
@@ -58,20 +56,6 @@ const BuyerRequestForm = ({ onSubmit, onClose }) => {
             placeholder="e.g. 10"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
-            className="w-full border p-2 rounded"
-            required
-          />
-        </div>
-
-        <div data-aos="fade-left">
-          <label className="block mb-1 text-sm font-medium text-gray-700">
-            Price (DZD)
-          </label>
-          <input
-            type="number"
-            placeholder="e.g. 150"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
             className="w-full border p-2 rounded"
             required
           />

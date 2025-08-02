@@ -53,7 +53,6 @@ const BuyerSidebar = ({ onNewRequest, previousRequests }) => {
               >
                 <p><strong>Product:</strong> {req.product}</p>
                 <p><strong>Quantity:</strong> {req.quantity} kg</p>
-                <p><strong>Price:</strong> {req.price} DZD/kg</p>
                 <p>
                   <strong>Status:</strong>{" "}
                   <span className={req.status === "done" ? "text-green-600" : "text-yellow-600"}>
