@@ -1,4 +1,4 @@
-const PreviousRequests = ({ requests }) => {
+const PreviousRequests = ({ requests, onDelete }) => {
   return (
     <div className="mt-6">
       <h2 className="text-lg font-bold mb-3"> Previous Requests</h2>
@@ -12,27 +12,37 @@ const PreviousRequests = ({ requests }) => {
               key={index}
               className="border p-4 rounded-lg shadow-sm bg-white text-sm"
             >
-              <p>
-                <strong>Product:</strong> {req.product}
-              </p>
-              <p>
-                <strong>Quantity:</strong> {req.quantity} kg
-              </p>
-              <p>
-                <strong>Price:</strong> {req.price} DZD/kg
-              </p>
-              <p>
-                <strong>Status:</strong>{" "}
-                <span
-                  className={
-                    req.status === "done"
-                      ? "text-green-600 font-medium"
-                      : "text-yellow-600 font-medium"
-                  }
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <p>
+                    <strong>Product:</strong> {req.product}
+                  </p>
+                  <p>
+                    <strong>Quantity:</strong> {req.quantity} kg
+                  </p>
+                  <p>
+                    <strong>State:</strong> {req.state}
+                  </p>
+                  <p>
+                    <strong>Status:</strong>{" "}
+                    <span
+                      className={
+                        req.status === "done"
+                          ? "text-green-600 font-medium"
+                          : "text-yellow-600 font-medium"
+                      }
+                    >
+                      {req.status === "done" ? "Completed" : "Pending"}
+                    </span>
+                  </p>
+                </div>
+                <button
+                  onClick={() => onDelete(req.id)}
+                  className="ml-4 px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition-colors"
                 >
-                  {req.status === "done" ? "Completed" : "Pending"}
-                </span>
-              </p>
+                  Delete
+                </button>
+              </div>
             </li>
           ))}
         </ul>

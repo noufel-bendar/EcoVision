@@ -4,11 +4,13 @@ import 'aos/dist/aos.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const Dashboard = () => {
+const Dashboard = ({ onOfferCreated }) => {
   const [productType, setProductType] = useState('');
   const [state, setState] = useState('');
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState([]);
+  const [prices, setPrices] = useState({});
+  const [accepting, setAccepting] = useState({});
   const navigate = useNavigate();
 
   const states = [
@@ -57,6 +59,13 @@ const Dashboard = () => {
 
       console.log('API Response:', response.data);
       setResults(response.data);
+      
+      // Initialize prices for new results
+      const newPrices = {};
+      response.data.forEach(req => {
+        newPrices[req.id] = '';
+      });
+      setPrices(newPrices);
     } catch (error) {
       console.error('Search error:', error);
       if (error.response?.status === 401) {
@@ -67,6 +76,63 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAccept = async (requestId) => {
+    const price = prices[requestId];
+    if (!price || price <= 0) {
+      alert("Please enter a valid price");
+      return;
+    }
+
+    try {
+      setAccepting(prev => ({ ...prev, [requestId]: true }));
+      const token = localStorage.getItem('token');
+      
+      const response = await axios.post('http://127.0.0.1:8000/api/seller/create-offer/', {
+        request_id: requestId,
+        price: parseFloat(price),
+        message: `Offer for ${price} DZD/kg`
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      alert("Offer sent successfully! The buyer will be notified.");
+      
+      // Remove the accepted request from the results
+      setResults(prev => prev.filter(req => req.id !== requestId));
+      
+      // Clear the price for this request
+      setPrices(prev => {
+        const newPrices = { ...prev };
+        delete newPrices[requestId];
+        return newPrices;
+      });
+      
+      // Refresh the seller's orders if callback is provided
+      if (onOfferCreated) {
+        onOfferCreated();
+      }
+      
+    } catch (error) {
+      console.error('Accept error:', error);
+      if (error.response?.data?.error) {
+        alert(error.response.data.error);
+      } else {
+        alert("Failed to send offer. Please try again.");
+      }
+    } finally {
+      setAccepting(prev => ({ ...prev, [requestId]: false }));
+    }
+  };
+
+  const handlePriceChange = (requestId, value) => {
+    setPrices(prev => ({
+      ...prev,
+      [requestId]: value
+    }));
   };
 
   return (
@@ -120,6 +186,25 @@ const Dashboard = () => {
               <p><span className="font-semibold">Quantity:</span> {req.quantity} kg</p>
               <p><span className="font-semibold">State:</span> {req.state}</p>
               <p><span className="font-semibold">Status:</span> {req.status}</p>
+              
+              <div className="mt-3 flex items-center gap-2">
+                <input
+                  type="number"
+                  placeholder="Price (DZD/kg)"
+                  value={prices[req.id] || ''}
+                  onChange={(e) => handlePriceChange(req.id, e.target.value)}
+                  className="flex-1 border border-gray-300 rounded-md p-2 text-sm"
+                  min="0"
+                  step="0.01"
+                />
+                <button
+                  onClick={() => handleAccept(req.id)}
+                  disabled={accepting[req.id]}
+                  className="bg-green-600 text-white px-4 py-2 rounded-md text-sm hover:bg-green-700 transition disabled:opacity-60"
+                >
+                  {accepting[req.id] ? 'Sending...' : 'Accept'}
+                </button>
+              </div>
             </div>
           ))
         ) : (

@@ -24,10 +24,11 @@ class BuyerRequestViewSet(viewsets.ModelViewSet):
         """
         Get buyer requests for the authenticated user.
         Creates BuyerProfile if it doesn't exist.
+        Only returns open requests (not closed ones).
         """
         try:
             buyer_profile = BuyerProfile.objects.get(user=self.request.user)
-            return BuyerRequest.objects.filter(buyer=buyer_profile)
+            return BuyerRequest.objects.filter(buyer=buyer_profile, status='open')
         except BuyerProfile.DoesNotExist:
             # Create BuyerProfile if it doesn't exist
             from accounts.models import Profile
@@ -47,7 +48,7 @@ class BuyerRequestViewSet(viewsets.ModelViewSet):
                     municipality='Alger',
                     phone=''
                 )
-            return BuyerRequest.objects.filter(buyer=buyer_profile)
+            return BuyerRequest.objects.filter(buyer=buyer_profile, status='open')
 
     def perform_create(self, serializer):
         """
@@ -131,9 +132,70 @@ def accept_offer(request, offer_id):
         offer = Offer.objects.get(id=offer_id, request__buyer=buyer_profile)
         offer.status = 'accepted'
         offer.save()
+        
+        # Close the buyer request since it has been accepted
+        buyer_request = offer.request
+        buyer_request.status = 'closed'
+        buyer_request.save()
+        
+        # Award points to the seller
+        try:
+            from seller.models import SellerProfile
+            
+            # Calculate points first
+            base_points_per_kg = 2  # 2 points per kg
+            quantity = buyer_request.quantity
+            base_points = quantity * base_points_per_kg
+            
+            # Bonus points based on number of previous successful transactions (excluding current one)
+            previous_successful_transactions = offer.seller.offers.filter(status='accepted').exclude(id=offer.id).count()
+            bonus_points = min(previous_successful_transactions * 5, 50)  # Max 50 bonus points
+            
+            total_points = base_points + bonus_points
+            
+            try:
+                seller_profile = SellerProfile.objects.get(user=offer.seller)
+                # Update seller's total points
+                seller_profile.total_points += total_points
+                seller_profile.save()
+                
+                print(f"Awarded {total_points} points to seller {offer.seller.username}")
+                print(f"  - Base points: {base_points} (quantity: {quantity}kg)")
+                print(f"  - Bonus points: {bonus_points} (previous transactions: {previous_successful_transactions})")
+                print(f"  - Total points now: {seller_profile.total_points}")
+                
+            except SellerProfile.DoesNotExist:
+                print(f"Seller profile not found for user {offer.seller.username}")
+                # Create seller profile if it doesn't exist
+                try:
+                    from accounts.models import Profile
+                    profile = Profile.objects.get(user=offer.seller)
+                    seller_profile = SellerProfile.objects.create(
+                        user=offer.seller,
+                        state=profile.state,
+                        municipality=profile.municipality,
+                        total_points=total_points
+                    )
+                    print(f"Created seller profile for {offer.seller.username} with {total_points} points")
+                except Profile.DoesNotExist:
+                    seller_profile = SellerProfile.objects.create(
+                        user=offer.seller,
+                        state='Alger',
+                        municipality='Alger',
+                        total_points=total_points
+                    )
+                    print(f"Created seller profile for {offer.seller.username} with {total_points} points")
+                    
+        except Exception as e:
+            print(f"Error awarding points: {str(e)}")
+            # Continue with the offer acceptance even if points awarding fails
+        
         return Response({'detail': 'Offer accepted successfully'}, status=status.HTTP_200_OK)
     except (Offer.DoesNotExist, BuyerProfile.DoesNotExist):
         return Response({'detail': 'Offer not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        print(f"Error in accept_offer: {str(e)}")
+        return Response({'detail': 'Internal server error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['POST'])
@@ -147,6 +209,12 @@ def reject_offer(request, offer_id):
         offer = Offer.objects.get(id=offer_id, request__buyer=buyer_profile)
         offer.status = 'rejected'
         offer.save()
+        
+        # Close the buyer request since it has been rejected
+        buyer_request = offer.request
+        buyer_request.status = 'closed'
+        buyer_request.save()
+        
         return Response({'detail': 'Offer rejected successfully'}, status=status.HTTP_200_OK)
     except (Offer.DoesNotExist, BuyerProfile.DoesNotExist):
         return Response({'detail': 'Offer not found'}, status=status.HTTP_404_NOT_FOUND)

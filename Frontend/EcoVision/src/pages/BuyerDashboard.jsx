@@ -65,6 +65,9 @@ const BuyerDashboard = () => {
       updated.splice(index, 1);
       setSellerRequests(updated);
       alert("Offer accepted.");
+      
+      // Refresh previous requests since the request will be closed
+      fetchBuyerData();
     } catch (error) {
       console.error("Failed to accept offer:", error);
     }
@@ -79,8 +82,27 @@ const BuyerDashboard = () => {
       updated.splice(index, 1);
       setSellerRequests(updated);
       alert("Offer rejected.");
+      
+      // Refresh previous requests since the request will be closed
+      fetchBuyerData();
     } catch (error) {
       console.error("Failed to reject offer:", error);
+    }
+  };
+
+  const handleDeleteRequest = async (requestId) => {
+    if (window.confirm("Are you sure you want to delete this request?")) {
+      try {
+        await axios.delete(`/api/buyer/requests/${requestId}/`);
+        
+        setPreviousRequests((prev) => 
+          prev.filter(request => request.id !== requestId)
+        );
+        alert("Request deleted successfully.");
+      } catch (error) {
+        console.error("Failed to delete request:", error);
+        alert("Failed to delete request. Please try again.");
+      }
     }
   };
 
@@ -93,6 +115,7 @@ const BuyerDashboard = () => {
           <BuyerSidebar
             onNewRequest={() => setShowForm(true)}
             previousRequests={previousRequests}
+            onDeleteRequest={handleDeleteRequest}
           />
           {showForm && (
             <BuyerRequestForm

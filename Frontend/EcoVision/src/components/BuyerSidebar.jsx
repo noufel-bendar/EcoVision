@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import AOS from "aos";
+import PreviousRequests from "./PreviousRequests";
 
-const BuyerSidebar = ({ onNewRequest, previousRequests }) => {
+const BuyerSidebar = ({ onNewRequest, previousRequests, onDeleteRequest }) => {
   useEffect(() => {
     AOS.init({ duration: 700 });
     AOS.refresh();
@@ -38,32 +39,10 @@ const BuyerSidebar = ({ onNewRequest, previousRequests }) => {
         New Request
       </button>
 
-      <div data-aos="fade-up" data-aos-delay="400">
-        <h3 className="text-md font-semibold mb-2">Previous Requests</h3>
-        {safeRequests.length === 0 ? (
-          <p className="text-gray-500">No requests yet.</p>
-        ) : (
-          <ul className="space-y-2 text-sm">
-            {safeRequests.map((req, index) => (
-              <li
-                key={index}
-                className="border p-3 rounded-lg shadow-sm bg-gray-50"
-                data-aos="fade-up"
-                data-aos-delay={500 + index * 100}
-              >
-                <p><strong>Product:</strong> {req.product}</p>
-                <p><strong>Quantity:</strong> {req.quantity} kg</p>
-                <p>
-                  <strong>Status:</strong>{" "}
-                  <span className={req.status === "done" ? "text-green-600" : "text-yellow-600"}>
-                    {req.status === "done" ? "Completed" : "Pending"}
-                  </span>
-                </p>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <PreviousRequests 
+        requests={safeRequests} 
+        onDelete={onDeleteRequest}
+      />
     </div>
   );
 };

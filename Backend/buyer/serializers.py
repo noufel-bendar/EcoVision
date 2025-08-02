@@ -3,12 +3,14 @@ from .models import BuyerRequest
 
 class BuyerRequestSerializer(serializers.ModelSerializer):
     buyer = serializers.StringRelatedField(read_only=True) 
+    buyer_state = serializers.CharField(source='buyer.state', read_only=True)
 
     class Meta:
         model = BuyerRequest
         fields = [
             'id',
             'buyer',
+            'buyer_state',
             'product',
             'quantity',
             'status',
@@ -16,4 +18,4 @@ class BuyerRequestSerializer(serializers.ModelSerializer):
             'state',
             'municipality',
         ]
-        read_only_fields = ['id', 'buyer', 'status', 'created_at', 'municipality']
+        read_only_fields = ['id', 'buyer', 'buyer_state', 'status', 'created_at', 'municipality']
