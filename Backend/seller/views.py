@@ -41,6 +41,23 @@ class RewardViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = RewardSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        # Create sample rewards if none exist
+        if not Reward.objects.exists():
+            Reward.objects.create(
+                title="Free Coffee",
+                description="Get a free coffee from any partner café"
+            )
+            Reward.objects.create(
+                title="Discount Voucher",
+                description="20% discount on next purchase"
+            )
+            Reward.objects.create(
+                title="Premium Membership",
+                description="Access to exclusive deals and offers"
+            )
+        return Reward.objects.all()
+
 # views.py
 
 from rest_framework import viewsets

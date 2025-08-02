@@ -45,6 +45,24 @@ class RegisterView(APIView):
             nin=data['nin'] if data['userType'] == 'buyer' else None
         )
 
+        # Create specific profile based on user type
+        if data['userType'] == 'seller':
+            from seller.models import SellerProfile
+            SellerProfile.objects.create(
+                user=user,
+                state=data['state'],
+                municipality=data['municipality'],
+                total_points=0
+            )
+        elif data['userType'] == 'buyer':
+            from buyer.models import BuyerProfile
+            BuyerProfile.objects.create(
+                user=user,
+                state=data['state'],
+                municipality=data['municipality'],
+                phone=''
+            )
+
         refresh = RefreshToken.for_user(user)
 
         return Response({

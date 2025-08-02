@@ -8,7 +8,7 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 
 // ✅ Set baseURL for your Django API
-axios.defaults.baseURL = "http://localhost:8000";
+axios.defaults.baseURL = "http://127.0.0.1:8000";
 axios.defaults.headers.common["Content-Type"] = "application/json";
 
 const BuyerDashboard = () => {
@@ -16,7 +16,7 @@ const BuyerDashboard = () => {
   const [sellerRequests, setSellerRequests] = useState([]);
   const [showForm, setShowForm] = useState(false);
 
-  const token = localStorage.getItem("access_token");
+  const token = localStorage.getItem("token");
 
   // ✅ Add token to axios default headers once it's available
   if (token) {
@@ -41,11 +41,12 @@ const BuyerDashboard = () => {
     if (token) fetchBuyerData();
   }, [token]);
 
-  const handleAddRequest = async ({ product, quantity }) => {
+  const handleAddRequest = async ({ product, quantity, state }) => {
     try {
       const res = await axios.post("/api/buyer/requests/", {
         product,
-        quantity
+        quantity,
+        state
       });
 
       setPreviousRequests((prev) => [res.data, ...prev]);

@@ -48,7 +48,7 @@ class OrderSerializer(serializers.ModelSerializer):
 class RewardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reward
-        fields = ['id', 'title', 'required_points']
+        fields = ['id', 'title', 'description']
 
 
 class ClaimedRewardSerializer(serializers.ModelSerializer):
@@ -62,16 +62,23 @@ class ClaimedRewardSerializer(serializers.ModelSerializer):
         seller = SellerProfile.objects.get(user=request.user)
         reward = validated_data['reward']
 
-        if seller.total_points < reward.required_points:
+        # Fixed cost of 100 points for any reward
+        required_points = 100
+        if seller.total_points < required_points:
             raise serializers.ValidationError("Not enough points.")
 
-        seller.total_points -= reward.required_points
+        seller.total_points -= required_points
         seller.save()
 
         return ClaimedReward.objects.create(seller=seller, reward=reward)
 
 
 class OfferSerializer(serializers.ModelSerializer):  # formerly SellerOfferSerializer
+    sellerName = serializers.CharField(source='seller.username', read_only=True)
+    product = serializers.CharField(source='request.product', read_only=True)
+    quantity = serializers.IntegerField(source='request.quantity', read_only=True)
+    region = serializers.CharField(source='request.state', read_only=True)
+    
     class Meta:
         model = Offer
-        fields = '__all__'
+        fields = ['id', 'sellerName', 'product', 'quantity', 'region', 'price', 'message', 'status', 'created_at']

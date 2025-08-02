@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import BuyerRequest
+
 class BuyerRequestSerializer(serializers.ModelSerializer):
     buyer = serializers.StringRelatedField(read_only=True) 
 
@@ -15,4 +16,4 @@ class BuyerRequestSerializer(serializers.ModelSerializer):
             'state',
             'municipality',
         ]
-        read_only_fields = ['id', 'buyer', 'status', 'created_at']
+        read_only_fields = ['id', 'buyer', 'status', 'created_at', 'municipality']

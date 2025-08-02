@@ -1,9 +1,7 @@
 # seller/urls.py
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import SellerProfileViewSet, OrderViewSet
-from .views import SellerProfileViewSet, OrderViewSet, RewardViewSet
-from .views import ClaimedRewardViewSet
+from .views import SellerProfileViewSet, OrderViewSet, RewardViewSet, ClaimedRewardViewSet
 
 
 router = DefaultRouter()

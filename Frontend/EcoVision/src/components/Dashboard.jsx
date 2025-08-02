@@ -6,9 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const [productType, setProductType] = useState('');
-  const [weight, setWeight] = useState('');
   const [state, setState] = useState('');
-  const [municipality, setMunicipality] = useState('');
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState([]);
   const navigate = useNavigate();
@@ -24,7 +22,8 @@ const Dashboard = () => {
     'Aïn Témouchent', 'Ghardaïa', 'Relizane'
   ];
 
-  const products = ['pain', 'papier', 'plastique', 'déchets organiques'];
+  // Match the backend PRODUCT_CHOICES exactly
+  const products = ['plastic', 'metal', 'paper', 'glass'];
 
   useEffect(() => {
     AOS.init({ duration: 1000, once: true });
@@ -43,7 +42,10 @@ const Dashboard = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://127.0.0.1:8000/api/buyer/requests/', {
+      
+      console.log('Searching for:', { product_type: productType, state: state });
+      
+      const response = await axios.get('http://127.0.0.1:8000/api/buyer/public-requests/', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -53,9 +55,10 @@ const Dashboard = () => {
         },
       });
 
+      console.log('API Response:', response.data);
       setResults(response.data);
     } catch (error) {
-      console.error(error);
+      console.error('Search error:', error);
       if (error.response?.status === 401) {
         navigate('/');
       } else {
@@ -68,31 +71,31 @@ const Dashboard = () => {
 
   return (
     <div className="bg-white rounded-2xl shadow-md p-6 space-y-6 w-full" data-aos="fade-up">
-      <h1 className="text-2xl font-bold text-logoGreen text-center mb-4">Trouver des acheteurs</h1>
+      <h1 className="text-2xl font-bold text-logoGreen text-center mb-4">Find Buyers</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div data-aos="zoom-in">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Type de produit</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Product Type</label>
           <select
             value={productType}
             onChange={(e) => setProductType(e.target.value)}
             className="w-full border border-gray-300 rounded-md p-2"
           >
-            <option value="">Sélectionner</option>
+            <option value="">Select</option>
             {products.map((prod) => (
-              <option key={prod} value={prod}>{prod}</option>
+              <option key={prod} value={prod}>{prod.charAt(0).toUpperCase() + prod.slice(1)}</option>
             ))}
           </select>
         </div>
 
         <div data-aos="zoom-in" data-aos-delay="100">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Wilaya</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
           <select
             value={state}
             onChange={(e) => setState(e.target.value)}
             className="w-full border border-gray-300 rounded-md p-2"
           >
-            <option value="">Sélectionner</option>
+            <option value="">Select</option>
             {states.map((wilaya) => (
               <option key={wilaya} value={wilaya}>{wilaya}</option>
             ))}
@@ -106,22 +109,21 @@ const Dashboard = () => {
         data-aos="fade-up"
         disabled={loading}
       >
-        {loading ? 'Chargement...' : 'Rechercher'}
+        {loading ? 'Loading...' : 'Search'}
       </button>
 
       <div className="pt-6 space-y-4">
         {results.length > 0 ? (
           results.map((req) => (
             <div key={req.id} className="border border-gray-200 p-4 rounded-lg shadow-sm">
-              <p><span className="font-semibold">Produit:</span> {req.product_type}</p>
-              <p><span className="font-semibold">Quantité:</span> {req.quantity} kg</p>
-              <p><span className="font-semibold">Wilaya:</span> {req.state}</p>
-              <p><span className="font-semibold">Municipalité:</span> {req.municipality}</p>
-              <p><span className="font-semibold">Prix:</span> {req.price} DZD</p>
+              <p><span className="font-semibold">Product:</span> {req.product}</p>
+              <p><span className="font-semibold">Quantity:</span> {req.quantity} kg</p>
+              <p><span className="font-semibold">State:</span> {req.state}</p>
+              <p><span className="font-semibold">Status:</span> {req.status}</p>
             </div>
           ))
         ) : (
-          <p className="text-center text-gray-500">Aucune demande trouvée</p>
+          <p className="text-center text-gray-500">No requests found</p>
         )}
       </div>
     </div>

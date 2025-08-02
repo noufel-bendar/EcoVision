@@ -16,7 +16,7 @@ const PointsSection = () => {
 
     // Fetch seller profile
     axios
-      .get('/api/seller/profile/', config)
+      .get('http://127.0.0.1:8000/api/seller/profile/', config)
       .then((res) => {
         if (res.data.length > 0) {
           setPoints(res.data[0].total_points);
@@ -26,7 +26,7 @@ const PointsSection = () => {
 
     // Fetch rewards list
     axios
-      .get('/api/seller/rewards/', config)
+      .get('http://127.0.0.1:8000/api/seller/rewards/', config)
       .then((res) => {
         console.log('Rewards API response:', res.data);
         setRewards(res.data);
@@ -56,13 +56,13 @@ const PointsSection = () => {
               <li
                 key={reward.id}
                 className={`p-3 rounded-lg flex justify-between items-center border ${
-                  points >= reward.required_points ? 'bg-green-50 border-green-200' : 'bg-gray-50'
+                  points >= 100 ? 'bg-green-50 border-green-200' : 'bg-gray-50'
                 }`}
                 data-aos="fade-left"
                 data-aos-delay={index * 100}
               >
                 <span>{reward.title}</span>
-                <span className="text-sm text-gray-600">{reward.required_points} pts</span>
+                <span className="text-sm text-gray-600">100 pts</span>
               </li>
             ))}
         </ul>

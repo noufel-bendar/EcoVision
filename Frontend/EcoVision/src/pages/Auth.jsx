@@ -77,7 +77,7 @@ const Auth = () => {
         res = await axios.post('http://127.0.0.1:8000/api/register/', payload);
       }
 
-      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('token', res.data.access);
       localStorage.setItem('user_type', res.data.user_type);
       localStorage.setItem('username', res.data.username);
 
