@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../lib/api';
 
 const PointsSection = () => {
   const [points, setPoints] = useState(0);
@@ -14,20 +14,14 @@ const PointsSection = () => {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
-
         // Fetch seller profile
-        const profileRes = await axios.get('http://127.0.0.1:8000/api/seller/profile/', config);
+        const profileRes = await api.get('/api/seller/profile/');
         if (profileRes.data && profileRes.data.length > 0) {
           setPoints(profileRes.data[0].total_points || 0);
         }
 
         // Fetch rewards list
-        const rewardsRes = await axios.get('http://127.0.0.1:8000/api/seller/rewards/', config);
+        const rewardsRes = await api.get('/api/seller/rewards/');
         setRewards(rewardsRes.data || []);
       } catch (error) {
         console.error('Failed to fetch data:', error);
@@ -49,12 +43,8 @@ const PointsSection = () => {
       setClaiming(true);
       const token = localStorage.getItem('token');
       
-      await axios.post('http://127.0.0.1:8000/api/seller/claim-reward/', {
+      await api.post('/api/seller/claim-reward/', {
         reward: rewardId
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
 
       alert('Reward claimed successfully!');
@@ -70,11 +60,7 @@ const PointsSection = () => {
   const handleDebugPoints = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://127.0.0.1:8000/api/seller/debug-points/', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get('/api/seller/debug-points/');
       
       setDebugInfo(response.data);
       console.log('Debug info:', response.data);

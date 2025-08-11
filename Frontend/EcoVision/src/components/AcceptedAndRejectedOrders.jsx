@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import axios from "axios";
+import api from "../lib/api";
 
 const AcceptedAndRejectedOrders = ({ accepted, rejected, onRefresh }) => {
   const [deleting, setDeleting] = useState({});
@@ -19,11 +19,7 @@ const AcceptedAndRejectedOrders = ({ accepted, rejected, onRefresh }) => {
       setDeleting(prev => ({ ...prev, [offerId]: true }));
       const token = localStorage.getItem('token');
       
-      await axios.delete(`http://127.0.0.1:8000/api/seller/delete-offer/${offerId}/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.delete(`/api/seller/delete-offer/${offerId}/`);
 
       alert(`${type} order deleted successfully!`);
       
