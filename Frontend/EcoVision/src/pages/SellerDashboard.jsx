@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../lib/api';
 import Dashboard from '../components/Dashboard';
 import PointsSection from '../components/PointsSection';
 import TopSellers from '../components/TopSellers';
@@ -18,17 +18,9 @@ const SellerDashboard = () => {
       if (!token) return;
 
       // Ensure seller profile exists
-      await axios.get('http://127.0.0.1:8000/api/seller/ensure-profile/', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.get('/api/seller/ensure-profile/');
 
-      const response = await axios.get('http://127.0.0.1:8000/api/seller/my-offers/', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get('/api/seller/my-offers/');
 
       setAcceptedOrders(response.data.accepted || []);
       setRejectedOrders(response.data.rejected || []);

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import bgImage from '../assets/images/2-bg.png';
-import axios from 'axios';
+import api from '../lib/api';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -55,7 +55,7 @@ const Auth = () => {
       let res;
 
       if (login) {
-        res = await axios.post('http://127.0.0.1:8000/api/login/', {
+        res = await api.post('/api/login/', {
           username,
           password,
         });
@@ -74,7 +74,7 @@ const Auth = () => {
           municipality,
         };
 
-        res = await axios.post('http://127.0.0.1:8000/api/register/', payload);
+        res = await api.post('/api/register/', payload);
       }
 
       localStorage.setItem('token', res.data.access);

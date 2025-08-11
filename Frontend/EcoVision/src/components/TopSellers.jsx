@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../lib/api';
 
 function TopSellers() {
   const [topSellers, setTopSellers] = useState([]);
@@ -11,11 +11,7 @@ function TopSellers() {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        const response = await axios.get('http://127.0.0.1:8000/api/seller/top-sellers/', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await api.get('/api/seller/top-sellers/');
 
         setTopSellers(response.data || []);
       } catch (error) {
