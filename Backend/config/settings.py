@@ -43,15 +43,22 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173"
+    "http://localhost:5173",
+    "https://eco-vision-j42t.vercel.app",
 ]
 CORS_ALLOW_HEADERS = [
     "authorization",
     "content-type",
 ]
 CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://eco-vision-j42t.vercel.app",
+    "https://*.vercel.app",
+    "https://ecovision-2.onrender.com",
+]
 
 ROOT_URLCONF = 'config.urls'
 

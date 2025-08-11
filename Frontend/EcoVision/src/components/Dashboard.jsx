@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import axios from 'axios';
+import api from '../lib/api';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = ({ onOfferCreated }) => {
@@ -47,10 +47,7 @@ const Dashboard = ({ onOfferCreated }) => {
       
       console.log('Searching for:', { product_type: productType, state: state });
       
-      const response = await axios.get('http://127.0.0.1:8000/api/buyer/public-requests/', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const response = await api.get('/api/buyer/public-requests/', {
         params: {
           product_type: productType,
           state: state,
@@ -89,14 +86,10 @@ const Dashboard = ({ onOfferCreated }) => {
       setAccepting(prev => ({ ...prev, [requestId]: true }));
       const token = localStorage.getItem('token');
       
-      const response = await axios.post('http://127.0.0.1:8000/api/seller/create-offer/', {
+      const response = await api.post('/api/seller/create-offer/', {
         request_id: requestId,
         price: parseFloat(price),
         message: `Offer for ${price} DZD/kg`
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
 
       alert("Offer sent successfully! The buyer will be notified.");
