@@ -203,7 +203,8 @@ def top_sellers(request):
         sellers_data = []
         for seller in top_sellers:
             # Calculate total sales from accepted offers
-            accepted_offers = seller.user.offers.filter(status='accepted')
+            # Use the correct relationship: Offer.objects.filter(seller=seller.user)
+            accepted_offers = Offer.objects.filter(seller=seller.user, status='accepted')
             total_sales = sum(offer.request.quantity for offer in accepted_offers)
             
             sellers_data.append({
@@ -266,7 +267,7 @@ def debug_seller_points(request):
         seller_profile = SellerProfile.objects.get(user=request.user)
         
         # Get all offers by this seller
-        all_offers = seller_profile.user.offers.all()
+        all_offers = Offer.objects.filter(seller=request.user)
         accepted_offers = all_offers.filter(status='accepted')
         pending_offers = all_offers.filter(status='pending')
         rejected_offers = all_offers.filter(status='rejected')
@@ -333,7 +334,8 @@ def delete_offer(request, offer_id):
                 
                 # Calculate bonus points that were awarded
                 # We need to count accepted offers before this one was accepted
-                previous_accepted_offers = request.user.offers.filter(
+                previous_accepted_offers = Offer.objects.filter(
+                    seller=request.user,
                     status='accepted',
                     created_at__lt=offer.created_at
                 ).count()
