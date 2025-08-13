@@ -12,9 +12,28 @@ SECRET_KEY = os.environ.get(
 
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
+# Production settings
+if not DEBUG:
+    ALLOWED_HOSTS = [
+        'ecovision-2.onrender.com',
+        '*.onrender.com',
+        'localhost',
+        '127.0.0.1',
+    ]
+else:
+    ALLOWED_HOSTS = ['*']
 
-ALLOWED_HOSTS = ['*']  
-
+# CORS settings for production
+if not DEBUG:
+    CORS_ALLOWED_ORIGINS = [
+        "https://eco-vision-j42t.vercel.app",
+        "https://eco-vision-swart.vercel.app",
+        "https://ecovision-2.onrender.com",
+    ]
+    CORS_ALLOW_CREDENTIALS = True
+else:
+    CORS_ALLOW_ALL_ORIGINS = True
+    CORS_ALLOW_CREDENTIALS = True
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -43,17 +62,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:5173",
-#     "https://eco-vision-j42t.vercel.app",
-#     "https://eco-vision-swart.vercel.app",
-# ]
 CORS_ALLOW_HEADERS = [
     "authorization",
     "content-type",
 ]
-CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "https://eco-vision-j42t.vercel.app",
