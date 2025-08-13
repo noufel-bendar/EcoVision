@@ -2,9 +2,53 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="src/assets/images/2.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EcoVision</title>
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    
+    <!-- Mobile Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="EcoVision" />
+    <meta name="application-name" content="EcoVision" />
+    <meta name="theme-color" content="#187b1b" />
+    <meta name="msapplication-navbutton-color" content="#187b1b" />
+    <meta name="msapplication-TileColor" content="#187b1b" />
+    
+    <!-- Mobile Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    
+    <!-- Mobile Manifest -->
+    <link rel="manifest" href="/site.webmanifest" />
+    
+    <!-- Mobile CSS -->
+    <style>
+      /* Prevent zoom on input focus for iOS */
+      input[type="text"], input[type="email"], input[type="password"], select, textarea {
+        font-size: 16px !important;
+      }
+      
+      /* Smooth scrolling for mobile */
+      html {
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      /* Prevent horizontal scroll */
+      body {
+        overflow-x: hidden;
+        width: 100%;
+      }
+      
+      /* Mobile tap highlight */
+      * {
+        -webkit-tap-highlight-color: transparent;
+      }
+    </style>
+    
+    <title>EcoVision - Sustainable Marketplace</title>
   </head>
   <body>
     <div id="root"></div>

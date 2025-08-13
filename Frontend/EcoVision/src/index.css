@@ -1,3 +1,95 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Import mobile-first styles */
+@import './mobile.css';
+
+/* Mobile-first base styles */
+@layer base {
+  html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  
+  * {
+    box-sizing: border-box;
+  }
+  
+  /* Prevent horizontal scroll on mobile */
+  .mobile-container {
+    overflow-x: hidden;
+    width: 100%;
+  }
+}
+
+/* Mobile-first component styles */
+@layer components {
+  .mobile-form-group {
+    @apply mb-4;
+  }
+  
+  .mobile-form-label {
+    @apply block text-sm font-medium mb-2 text-gray-800;
+  }
+  
+  .mobile-form-input {
+    @apply w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-logoGreen focus:ring-2 focus:ring-logoGreen/20 transition-all duration-200 text-base;
+  }
+  
+  .mobile-form-select {
+    @apply w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-logoGreen focus:ring-2 focus:ring-logoGreen/20 transition-all duration-200 text-base bg-white;
+  }
+  
+  .mobile-btn-primary {
+    @apply w-full bg-logoGreen hover:bg-logoGreenDark text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 tracking-wide text-base touch-manipulation;
+  }
+  
+  .mobile-btn-secondary {
+    @apply w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-all duration-200 tracking-wide text-base touch-manipulation;
+  }
+  
+  .mobile-card {
+    @apply bg-white rounded-xl shadow-lg p-6 mb-4;
+  }
+  
+  .mobile-nav-item {
+    @apply block w-full text-left px-4 py-3 text-base text-gray-700 hover:bg-gray-100 transition-colors duration-200;
+  }
+}
+
+/* Mobile-first utility styles */
+@layer utilities {
+  .mobile-text-responsive {
+    @apply text-sm sm:text-base md:text-lg;
+  }
+  
+  .mobile-padding-responsive {
+    @apply p-4 sm:p-6 md:p-8;
+  }
+  
+  .mobile-margin-responsive {
+    @apply m-4 sm:m-6 md:m-8;
+  }
+  
+  .mobile-hidden-mobile {
+    @apply hidden sm:block;
+  }
+  
+  .mobile-block-mobile {
+    @apply block sm:hidden;
+  }
+}

@@ -97,27 +97,59 @@ const BuyerDashboard = () => {
     <div className="flex flex-col min-h-screen bg-[#e6f4e8]">
       <Header />
 
-      <main className="flex flex-1 flex-col lg:flex-row gap-6 p-6">
-        <div className="lg:w-1/3 w-full mt-24">
-          <BuyerSidebar
-            onNewRequest={() => setShowForm(true)}
-            previousRequests={previousRequests}
-            onDeleteRequest={handleDeleteRequest}
-          />
-          {showForm && (
-            <BuyerRequestForm
-              onClose={() => setShowForm(false)}
-              onSubmit={handleAddRequest}
-            />
-          )}
-        </div>
+      {/* Main Content with Mobile-First Layout */}
+      <main className="flex-1 pt-16 sm:pt-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+          
+          {/* Mobile-Responsive Grid Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+            
+            {/* Sidebar - Full width on mobile, 1/3 on desktop */}
+            <div className="lg:col-span-1 order-1 lg:order-1">
+              <BuyerSidebar 
+                onNewRequest={() => setShowForm(true)}
+                previousRequests={previousRequests}
+                onDeleteRequest={handleDeleteRequest}
+              />
+            </div>
 
-        <div className="lg:w-2/3 w-full mt-24">
-          <IncomingSellerRequests
-            sellerRequests={sellerRequests}
-            onAccept={handleAccept}
-            onReject={handleReject}
-          />
+            {/* Main Content Area - Full width on mobile, 2/3 on desktop */}
+            <div className="lg:col-span-2 order-2 lg:order-2 space-y-4 sm:space-y-6">
+              
+              {/* Request Form Modal/Overlay */}
+              {showForm && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+                  <div className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+                    <div className="p-4 sm:p-6">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
+                          New Request
+                        </h3>
+                        <button
+                          onClick={() => setShowForm(false)}
+                          className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+                        >
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                      <BuyerRequestForm onSubmit={handleAddRequest} />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Incoming Seller Requests */}
+              <div className="mobile-card">
+                <IncomingSellerRequests 
+                  requests={sellerRequests}
+                  onAccept={handleAccept}
+                  onReject={handleReject}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </main>
 

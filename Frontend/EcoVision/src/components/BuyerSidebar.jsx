@@ -12,37 +12,72 @@ const BuyerSidebar = ({ onNewRequest, previousRequests, onDeleteRequest }) => {
 
   return (
     <div
-      className="w-full bg-white p-4 rounded-xl shadow-md"
+      className="mobile-card"
       data-aos="fade-right"
     >
-      <h2
-        className="text-xl font-bold mb-2 text-green-700"
-        data-aos="fade-down"
-        data-aos-delay="100"
-      >
-        Buyer Info
-      </h2>
-      <p
-        className="text-sm text-gray-700 mb-4"
-        data-aos="fade-up"
-        data-aos-delay="200"
-      >
-        Welcome back!
-      </p>
+      {/* Header Section */}
+      <div className="text-center sm:text-left mb-6">
+        <h2
+          className="mobile-title text-logoGreen"
+          data-aos="fade-down"
+          data-aos-delay="100"
+        >
+          Buyer Dashboard
+        </h2>
+        <p
+          className="mobile-text text-gray-600"
+          data-aos="fade-up"
+          data-aos-delay="200"
+        >
+          Welcome back! Manage your requests and view offers.
+        </p>
+      </div>
 
-      <button
-        onClick={onNewRequest}
-        className="bg-green-700 text-white px-4 py-2 rounded mb-6 hover:bg-green-800 transition"
-        data-aos="zoom-in"
-        data-aos-delay="300"
-      >
-        New Request
-      </button>
+      {/* New Request Button */}
+      <div className="mb-6" data-aos="zoom-in" data-aos-delay="300">
+        <button
+          onClick={onNewRequest}
+          className="mobile-btn-primary w-full"
+        >
+          + New Request
+        </button>
+      </div>
 
-      <PreviousRequests 
-        requests={safeRequests} 
-        onDelete={onDeleteRequest}
-      />
+      {/* Previous Requests Section */}
+      <div className="space-y-4">
+        <h3
+          className="mobile-subtitle text-logoGreen"
+          data-aos="fade-down"
+          data-aos-delay="400"
+        >
+          Your Requests
+        </h3>
+        
+        <div data-aos="fade-up" data-aos-delay="500">
+          <PreviousRequests 
+            requests={safeRequests} 
+            onDelete={onDeleteRequest}
+          />
+        </div>
+      </div>
+
+      {/* Mobile Stats */}
+      <div className="mt-6 pt-4 border-t border-gray-200 sm:hidden">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-logoGreen">
+              {safeRequests.length}
+            </div>
+            <div className="text-sm text-gray-600">Total Requests</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-blue-600">
+              {safeRequests.filter(r => r.status === 'active').length}
+            </div>
+            <div className="text-sm text-gray-600">Active</div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
