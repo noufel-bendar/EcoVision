@@ -47,6 +47,7 @@ CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://eco-vision-j42t.vercel.app",
+    "https://eco-vision-swart.vercel.app",
 ]
 CORS_ALLOW_HEADERS = [
     "authorization",
@@ -56,6 +57,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "https://eco-vision-j42t.vercel.app",
+    "https://eco-vision-swart.vercel.app",
     "https://*.vercel.app",
     "https://ecovision-2.onrender.com",
 ]
